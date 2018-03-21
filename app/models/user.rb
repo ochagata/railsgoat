@@ -8,6 +8,8 @@ class User < ApplicationRecord
                        on: :create,
                        if: :password
 
+  validate :password_complexity
+
   validates_presence_of :email
   validates_uniqueness_of :email
   validates_format_of :email, with: /.+@.+\..+/i
@@ -41,18 +43,28 @@ class User < ApplicationRecord
   def self.authenticate(email, password)
     auth = nil
     user = find_by_email(email)
-    raise "#{email} doesn't exist!" if !(user)
-    if user.password == Digest::MD5.hexdigest(password)
-      auth = user
+    raise "Incorrect email/password combination!" if !(user)
+    if user.password_salt
+      if user.password == BCrypt::Engine.hash_secret(password, user.password_salt)
+        auth = user
+      else
+        raise "Incorrect email/password combination!"
+      end
     else
-      raise "Incorrect Password!"
+      user.save!
+      if user.password == Digest::MD5.hexdigest(password)
+        auth = user
+      else
+        raise "Incorrect email/password combination!"
+      end
     end
     return auth
   end
 
   def hash_password
     if will_save_change_to_password?
-      self.password = Digest::MD5.hexdigest(self.password)
+      self.password_salt = BCrypt::Engine.generate_salt
+      self.password = BCrypt::Engine.hash_secret(self.password, self.password_salt)
     end
   end
 
@@ -63,5 +75,11 @@ class User < ApplicationRecord
     end
 
     self.save!
+  end
+
+  def password_complexity
+    if password.present? and not password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)./)
+      errors.add :password, "must include at least one lowercase letter, one uppercase letter, and one digit"
+    end
   end
 end

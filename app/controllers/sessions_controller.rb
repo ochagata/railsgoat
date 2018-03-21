@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    path = params[:url].present? ? params[:url] : home_dashboard_index_path
+    path = params[:url] == 'http://localhost:3000/' ? params[:url] : home_dashboard_index_path
     begin
       # Normalize the email address, why not
       user = User.authenticate(params[:email].to_s.downcase, params[:password])

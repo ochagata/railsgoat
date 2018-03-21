@@ -2,6 +2,7 @@
 class ApplicationController < ActionController::Base
   before_action :authenticated, :has_info, :create_analytic, :mailer_options
   helper_method :current_user, :is_admin?, :sanitize_font
+  before_action :set_header
 
   # Our security guy keep talking about sea-surfing, cool story bro.
   # Prevent CSRF attacks by raising an exception.
@@ -23,8 +24,8 @@ class ApplicationController < ActionController::Base
   end
 
   def authenticated
-     path = request.fullpath.present? ? root_url(url: request.fullpath) : root_url
-     redirect_to path and reset_session if !current_user
+    path = request.fullpath.present? ? root_url(url: request.fullpath) : root_url
+    redirect_to path and reset_session if !current_user
   end
 
   def is_admin?
@@ -32,9 +33,7 @@ class ApplicationController < ActionController::Base
   end
 
   def administrative
-    if !is_admin?
-     redirect_to root_url
-   end
+    redirect_to root_url unless is_admin?
   end
 
   def has_info
@@ -57,5 +56,12 @@ class ApplicationController < ActionController::Base
 
   def sanitize_font(css)
     css
+  end
+
+  private
+
+  def set_header
+    response.set_header('X-XSS-Protection', '1')
+    response.set_header('X-Content-Type-Options', 'nosniff')
   end
 end

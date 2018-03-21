@@ -27,7 +27,8 @@ class PasswordResetsController < ApplicationController
   end
 
   def send_forgot_password
-    @user = User.find_by_email(params[:email]) unless params[:email].nil?
+
+    @user = User.where("email = ?", params[:email]).first unless params[:email].nil?
 
     if @user && password_reset_mailer(@user)
       flash[:success] = "Password reset email sent to #{params[:email]}"

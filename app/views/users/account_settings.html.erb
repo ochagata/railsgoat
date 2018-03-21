@@ -55,12 +55,12 @@
 
           <div class="control-group">
             <%= f.label :password, nil, {:class => "control-label"}%>
-            <%= f.password_field :password, {:class => "span12", :placeholder => "Enter Password"}%>
+            <%= f.password_field :password, {:class => "span12", :placeholder => "Enter Password", :autocomplete=>'off'}%>
           </div>
 
           <div class="control-group">
               <%= f.label :password_confirmation, nil, {:class => "control-label"}%>
-              <%= f.password_field :password_confirmation, {:class => "span12", :placeholder => "Enter Password"} %>
+              <%= f.password_field :password_confirmation, {:class => "span12", :placeholder => "Enter Password", :autocomplete=>'off'} %>
             </div>
 
           <div class="form-actions no-margin">

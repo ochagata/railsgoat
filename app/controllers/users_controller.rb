@@ -26,7 +26,7 @@ class UsersController < ApplicationController
   def update
     message = false
 
-    user = User.where("id = '#{params[:user][:id]}'")[0]
+    user = User.where("id = ?", current_user.id).first
 
     if user
       user.update_attributes(user_params_without_password)

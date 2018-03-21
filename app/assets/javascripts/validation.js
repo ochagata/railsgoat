@@ -1,14 +1,21 @@
 function validation(){
+	jQuery.validator.addMethod("pwcheck", function(value) {
+		return /^[A-Za-z0-9\d=!\-@._*]*$/.test(value) // consists of only these
+	       && /[a-z]/.test(value) // has a lowercase letter
+	       && /\d/.test(value) // has a digit
+		}, "Your password must have an uppercase letter, a lowercase letter, and a number");
 	$("#account_edit").validate({
 	    rules: {
 	        "user[password]": {
 	            required: false,
-	            minlength: 5
+	            minlength: 5,
+	            pwcheck: true
 	        },
 	        "user[password_confirmation]": {
 	            required: false,
 	            minlength: 5,
-	            equalTo: "#user_password"
+	            equalTo: "#user_password",
+	            pwcheck: true
 	        }
 	    },
 	    messages: {
